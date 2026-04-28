@@ -3,43 +3,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Heart, BookOpen, PenLine, Sparkles, Trash2 } from "lucide-react";
 
-const THOUGHTS = [
-  {
-    id: "t1",
-    text: "Progress is still progress when nobody claps for it.",
-    author: "Daily Thought",
-  },
-  {
-    id: "t2",
-    text: "The person you are becoming is built by what you repeat.",
-    author: "Daily Thought",
-  },
-  {
-    id: "t3",
-    text: "Do the next honest thing. Then the next one after that.",
-    author: "Daily Thought",
-  },
-  {
-    id: "t4",
-    text: "A hard day is not evidence of a failed life.",
-    author: "Daily Thought",
-  },
-  {
-    id: "t5",
-    text: "Small courage compounds quietly.",
-    author: "Daily Thought",
-  },
-  {
-    id: "t6",
-    text: "Your attention is one of the few things you truly get to spend.",
-    author: "Daily Thought",
-  },
-  {
-    id: "t7",
-    text: "Peace is often built before it is felt.",
-    author: "Daily Thought",
-  },
-];
 
 const STORAGE_KEYS = {
   savedThoughtIds: "daily-thought:savedThoughtIds",
@@ -51,7 +14,7 @@ function getTodayIndex() {
   const now = new Date();
   const msPerDay = 1000 * 60 * 60 * 24;
   const daysSinceStart = Math.floor((now.getTime() - start.getTime()) / msPerDay);
-  return Math.abs(daysSinceStart) % THOUGHTS.length;
+  return Math.abs(daysSinceStart);
 }
 
 function readJson(key, fallback) {
@@ -72,11 +35,23 @@ function formatDate(dateString) {
 }
 
 export default function DailyThoughtApp() {
-  const todayThought = useMemo(() => THOUGHTS[getTodayIndex()], []);
   const [savedThoughtIds, setSavedThoughtIds] = useState([]);
   const [journalEntries, setJournalEntries] = useState([]);
   const [journalText, setJournalText] = useState("");
   const [activeTab, setActiveTab] = useState("today");
+  const [thoughts, setThoughts] = useState([]);
+
+  const todayThought = useMemo(() => {
+    if (thoughts.length === 0) return null;
+    return thoughts[getTodayIndex() % thoughts.length];
+  }, [thoughts]);
+
+  useEffect(() => {
+    fetch("/thoughts.json")
+      .then((res) => res.json())
+      .then((data) => setThoughts(data))
+      .catch((err) => console.error("Failed to load thoughts:", err));
+  }, []);
 
   useEffect(() => {
     setSavedThoughtIds(readJson(STORAGE_KEYS.savedThoughtIds, []));
@@ -96,6 +71,10 @@ export default function DailyThoughtApp() {
       JSON.stringify(journalEntries)
     );
   }, [journalEntries]);
+
+  if (!todayThought) {
+    return <div>Loading...</div>;
+  }
 
   const isSaved = savedThoughtIds.includes(todayThought.id);
 
@@ -128,7 +107,8 @@ export default function DailyThoughtApp() {
     setJournalEntries((current) => current.filter((entry) => entry.id !== entryId));
   }
 
-  const savedThoughts = THOUGHTS.filter((thought) => savedThoughtIds.includes(thought.id));
+  const savedThoughts = thoughts.filter((thought) => savedThoughtIds.includes(thought.id));
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 via-orange-50 to-stone-100 text-stone-900">
@@ -156,7 +136,7 @@ export default function DailyThoughtApp() {
           <p className="mt-4 text-sm font-medium text-stone-500">{todayThought.author}</p>
 
           <button
-            onClick={() => toggleSaved(todayThought.id)}
+            onClick={() => toggleSaved(todayThought?.id)}
             className={`mt-6 flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-base font-semibold transition active:scale-[0.99] ${
               isSaved
                 ? "bg-orange-600 text-white shadow-lg shadow-orange-200"
