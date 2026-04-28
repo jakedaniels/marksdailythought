@@ -107,6 +107,29 @@ export default function DailyThoughtApp() {
     setJournalEntries((current) => current.filter((entry) => entry.id !== entryId));
   }
 
+function exportBackup() {
+  const savedThoughts = thoughts.filter((thought) =>
+    savedThoughtIds.includes(thought.id)
+  );
+
+  const data = {
+    exportedAt: new Date().toISOString(),
+    savedThoughts,
+    savedThoughtIds,
+    journalEntries,
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json",
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `daily-thought-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
   const savedThoughts = thoughts.filter((thought) => savedThoughtIds.includes(thought.id));
 
 
@@ -251,6 +274,18 @@ export default function DailyThoughtApp() {
               )}
             </div>
           )}
+        </section>
+
+        <section className="mt-5 rounded-3xl bg-white/70 p-4 shadow-sm ring-1 ring-orange-100">
+          <button
+            onClick={exportBackup}
+            className="w-full rounded-2xl bg-stone-950 px-4 py-3 text-base font-bold text-white transition active:scale-[0.99]"
+          >
+            Export saved thoughts & journal entries
+          </button>
+          <p className="mt-3 text-center text-xs leading-5 text-stone-500">
+            Downloads a local backup file with saved thoughts and journal entries.
+          </p>
         </section>
       </main>
     </div>
