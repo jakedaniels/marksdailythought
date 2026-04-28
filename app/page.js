@@ -116,9 +116,9 @@ export default function DailyThoughtApp() {
         <header className="mb-6 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.25em] text-orange-700/70">
-              Daily Thought
+              Mark's Daily Thought
             </p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">Good Things</h1>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight">Have a beautiful day</h1>
           </div>
           <div className="rounded-full bg-white/80 p-3 shadow-sm ring-1 ring-orange-100">
             <Sparkles className="h-6 w-6 text-orange-600" />
