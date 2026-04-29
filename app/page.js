@@ -139,7 +139,7 @@ function exportBackup() {
         <header className="mb-6 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.25em] text-orange-700/70">
-              Mark's Daily Thought
+              My Daily Thought
             </p>
             <h1 className="mt-1 text-3xl font-bold tracking-tight">Have a beautiful day</h1>
           </div>
