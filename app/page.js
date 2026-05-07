@@ -49,7 +49,10 @@ export default function DailyThoughtApp() {
   useEffect(() => {
     fetch("/thoughts.json")
       .then((res) => res.json())
-      .then((data) => setThoughts(data))
+      .then((data) => {
+            console.log("Fetched thoughts:", data.length, data[0]); // ← HERE
+            setThoughts(data);
+          })
       .catch((err) => console.error("Failed to load thoughts:", err));
   }, []);
 
